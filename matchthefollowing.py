@@ -6,26 +6,20 @@ import nltk
 import string
 import itertools
 import streamlit as st
-nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
+# nltk.download('punkt')
 import pke
 from nltk.corpus import stopwords
 from nltk.corpus import wordnet
 import traceback
-from nltk.tokenize import sent_tokenize
 from flashtext import KeywordProcessor
 import re
 from pprint import pprint
 import random
-from prettytable import PrettyTable
+import pandas as pd
+# from prettytable import PrettyTable
 from IPython.display import Markdown, display
-
-@st.cache(show_spinner=False)
-def tokenize_sentences(text):
-    sentences = sent_tokenize(text)
-    sentences = [sentence.strip() for sentence in sentences if len(sentence) > 20]
-    return sentences
 
 @st.cache(show_spinner=False)
 def get_keywords(text):
@@ -95,19 +89,20 @@ def printmd(string):
 @st.cache(allow_output_mutation=True)
 def question(keyword_sentence_mapping):
     # tab = PrettyTable()
-    answers, final_sentences = sentence_answers(keyword_sentence_mapping)
+    final_sentences, answers  = sentence_answers(keyword_sentence_mapping)
     random.shuffle(answers)
     random.shuffle(final_sentences)
-    cols = {
+    cols_dict = {
         "A": answers,
         "B": final_sentences
     }
+    pd.set_option("display.max_colwidth", None)
+    cols = pd.DataFrame(cols_dict)
     # tab.field_names=['A', 'B']
     # tab.align["A"] = "l"
     # tab.align["B"] = "l"
 
     # # printmd('**Match column A with column B**')
-
     # for word,context in zip(answers,final_sentences):
     #     tab.add_row([word,context.replace("\n"," ")])
     #     tab.add_row(['',''])

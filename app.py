@@ -10,7 +10,7 @@ import pandas as pd
 import base64
 from datetime import datetime
 
-from main import all_initialisations,fill_blank,true_false,mcq,match_the_foll
+from main import all_initialisations,mcq,match_the_foll,fill_blank,true_false
 
 
 if __name__=='__main__':

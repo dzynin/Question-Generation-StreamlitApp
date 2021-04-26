@@ -1,5 +1,4 @@
 import streamlit as st
-
 import json
 import requests
 import string
@@ -16,17 +15,10 @@ from nltk.corpus import stopwords
 from nltk.corpus import wordnet
 import traceback
 from pprint import pprint
-from nltk.tokenize import sent_tokenize
+# from nltk.tokenize import sent_tokenize
 from flashtext import KeywordProcessor
 import subprocess
-# import spacy
 from datetime import datetime
-# nlp = spacy.load("en_core_web_sm")
-
-def dtime():
-      return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-
 
 
 # keyword extraction using pke's MultipartiteRank Algorithm
@@ -104,41 +96,3 @@ def get_fill_in_the_blanks(sentence_mapping):
     out["sentences"]=blank_sentences[:10]
     out["keys"]=keys[:10]
     return out
-
-
-
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-# def download_link(object_to_download, download_filename, download_link_text,quest_type):
-#     """
-#     Generates a link to download the given object_to_download.
-
-#     object_to_download (str, pd.DataFrame):  The object to be downloaded.
-#     download_filename (str): filename and extension of file. e.g. mydata.csv, some_txt_output.txt
-#     download_link_text (str): Text to display for download link.
-
-#     Examples:
-#     download_link(YOUR_DF, 'YOUR_DF.csv', 'Click here to download data!')
-#     download_link(YOUR_STRING, 'YOUR_STRING.txt', 'Click here to download your text!')
-
-#     """
-# #     if isinstance(object_to_download,pd.DataFrame):
-# #         object_to_download = object_to_download.to_csv(index=False)
-
-#     if object_to_download is not {}:
-#         object_to_download = str(object_to_download)
-#         b64 = base64.b64encode(object_to_download.encode()).decode()
-
-#     return f'<a href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'

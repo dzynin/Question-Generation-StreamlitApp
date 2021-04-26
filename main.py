@@ -7,17 +7,22 @@ import pandas as pd
 import base64
 from datetime import datetime
 from nltk.tokenize import sent_tokenize
+import spacy
+from tabulate import tabulate
+
+spacy.load("en_core_web_sm")
 
 from true_false import  pos_tree_from_sentence,get_np_vp,alternate_sentences
 from fill_blank import get_noun_adj_verb,get_sentences_for_keyword,get_fill_in_the_blanks
 from matchthefollowing import  get_keywords,get_sentences_for_keyword,question
 from mcq import get_keywords, get_sentences_for_keyword, kw_distractors, getMCQ
 
+
 def file_selector():
     file = st.file_uploader('Upload the text file',type=['txt'])
     if file is not None:
         text = file.read().decode("utf-8")
-        st.write('Selected file content is `%s`' % text)
+        st.write('File Content: '+ text)
         return text
 
 def dtime():
@@ -41,11 +46,12 @@ def output_file(out, quest_type):
         f.write(f"{dt} {quest_type}:\n")
         f.write("-"*100+"\n\n")
         if quest_type == "Match the Following":
-            df = pd.DataFrame(out)
-            df.to_string(f,index = False, justify="justify-all")
+            f.write(tabulate(out,showindex=False, headers=out.columns, tablefmt="grid"))
+            # out.to_string(f,index = False)
             f.write("\n")
         elif quest_type == "Input Text":
             f.write(f"{out}")
+            f.write("\n")
         elif quest_type == "Fill in The Blanks":
             for i,sent in enumerate(out["sentences"]):
                 f.write(f"{str(i+1)}. {sent}\n")
@@ -57,7 +63,7 @@ def output_file(out, quest_type):
                 f.write(f"{str(count)}. {quest}")
                 if options:
                     for opt in options:
-                        f.write(chr(asci)+")"+opt.capitalize()+" ")
+                        f.write(chr(asci)+")"+" "+opt.capitalize())
                         asci += 1
                     f.write("\n")
                 count += 1
@@ -66,14 +72,7 @@ def output_file(out, quest_type):
                 f.write(f"{str(i+1)}. {que}\n")
         f.write("\n")
         
-        
-        
-        
-        
-        
-        
-        
-        
+             
 def download_link(object_to_download, download_filename, download_link_text,quest_type):
     """
     Generates a link to download the given object_to_download.
@@ -83,8 +82,8 @@ def download_link(object_to_download, download_filename, download_link_text,ques
     download_link_text (str): Text to display for download link.
 
     Examples:
-    download_link(YOUR_DF, 'YOUR_DF.csv', 'Click here to download data!')
-    download_link(YOUR_STRING, 'YOUR_STRING.txt', 'Click here to download your text!')
+    download_link(YOUR_DF, 'YOUR_DF.csv', 'Click here to download data!','required_question_type')
+    download_link(YOUR_STRING, 'YOUR_STRING.txt', 'Click here to download your text!','required_question_type')
 
     """
 #     if isinstance(object_to_download,pd.DataFrame):
@@ -99,9 +98,9 @@ def download_link(object_to_download, download_filename, download_link_text,ques
     object_to_download1+=f"{dt} {quest_type}:\r\n"
     object_to_download1+="-"*100+"\r\n\r\n"
     if quest_type == "Match the Following":
-        df = pd.DataFrame(object_to_download)
-        df.to_string(df,index = False, justify="justify-all")
-        object_to_download1+=f"{df}\r\n"
+        # object_to_download1+=f"{str(object_to_download)}\r\n"
+        object_to_download1+=tabulate(object_to_download,showindex=False,\
+             headers=object_to_download.columns,tablefmt="grid")
     elif quest_type == "Input Text":
             object_to_download1+=f"{object_to_download}"
     elif quest_type == "Fill in The Blanks":
@@ -109,16 +108,16 @@ def download_link(object_to_download, download_filename, download_link_text,ques
             object_to_download1+=f"{str(i+1)}. {sent}\r\n"
         object_to_download1+="\n"+str(object_to_download["keys"])+"\r\n"
     elif quest_type == "MCQ":
-            count = 1
-            for quest,options in object_to_download.items():
-                asci = 97
-                object_to_download1+=f"{str(count)}. {quest}"
-                if options:
-                    for opt in options:
-                        object_to_download1+=chr(asci)+")"+opt.capitalize()+" "
-                        asci += 1
-                    object_to_download1+=f"\r\n"
-                count += 1
+        count = 1
+        for quest,options in object_to_download.items():
+            asci = 97
+            object_to_download1+=f"{str(count)}. {quest}\n"
+            if options:
+                for opt in options:
+                    object_to_download1+=chr(asci)+")"+" "+opt.capitalize()+"\n"
+                    asci += 1
+                object_to_download1+=f"\r\n"
+            count += 1
     else:
         for i,que in enumerate(object_to_download):
             object_to_download1+=f"{str(i+1)}. {que}\r\n"
@@ -127,14 +126,6 @@ def download_link(object_to_download, download_filename, download_link_text,ques
     
     return f'<a href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'
     
-        
-        
-        
-        
-        
-        
-        
-        
 
 def match_the_foll():
     text = file_selector()
@@ -184,7 +175,7 @@ def match_the_foll():
                 keywords = get_keywords(text)[:6]
                 keyword_sentence_mapping = get_sentences_for_keyword(keywords, sentences)
                 mtf_table= question(keyword_sentence_mapping)
-                # st.write(mtf_table)
+                # st.write(str(mtf_table))
                 st.table(mtf_table)
                 output_file(text,"Input Text")
                 output_file(mtf_table, quest)
@@ -265,8 +256,9 @@ def mcq():
             sentences = tokenize_sentences(text)
             keywords = get_keywords(text)[:6]
             keyword_sentence_mapping = get_sentences_for_keyword(keywords, sentences)
-            mtf_table = question(keyword_sentence_mapping)
-            st.markdown(download_link(mtf_table, 'model_output.txt', 'Click here to download your output!',quest),unsafe_allow_html=True)
+            choices = kw_distractors(keywords)
+            mcq_ques = getMCQ(keyword_sentence_mapping,choices)
+            st.markdown(download_link(mcq_ques, 'model_output.txt', 'Click here to download your output!',quest),unsafe_allow_html=True)
         else:
             st.error("Please select input file!")
 

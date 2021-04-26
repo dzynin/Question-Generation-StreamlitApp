@@ -1,7 +1,6 @@
 import streamlit as st
 from nltk import tokenize
 from nltk.tree import Tree
-from nltk.tokenize import sent_tokenize
 from allennlp.predictors.predictor import Predictor
 import re
 import tensorflow as tf
@@ -11,12 +10,6 @@ nltk.download('punkt')
 
 predictor = Predictor.from_path("https://s3-us-west-2.amazonaws.com/allennlp/models/elmo-constituency-parser-2018.03.14.tar.gz")
 
-# Tokenizing sentence using nltk sent_tokenize
-@st.cache
-def tokenize_sentences_tf(text):
-    sentences = sent_tokenize(text)
-    sentences = [sentence.strip() for sentence in sentences if len(sentence) > 20]
-    return sentences[0]
 
 # Method returns parts of speech tree for given sentence
 @st.cache(show_spinner=False)
@@ -27,11 +20,6 @@ def pos_tree_from_sentence(text):
     tree_string = parser_output["trees"]
     tree = Tree.fromstring(tree_string)
     return tree
-
-
-
-
-
 
 # split at right most nounphrase or verbphrase
 @st.cache
@@ -78,9 +66,6 @@ def get_termination_portion(main_string, sub_string):
             return " ".join(main_string_list[:i])
 
     return None
-
-
-
 
 @st.cache(show_spinner=False)
 def get_np_vp(tree,sentence):
