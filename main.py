@@ -63,7 +63,7 @@ def output_file(out, quest_type):
                 f.write(f"{str(count)}. {quest}")
                 if options:
                     for opt in options:
-                        f.write(chr(asci)+")"+" "+opt.capitalize())
+                        f.write(chr(asci)+")"+" "+opt.capitalize()+"\n")
                         asci += 1
                     f.write("\n")
                 count += 1
