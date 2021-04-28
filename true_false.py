@@ -177,15 +177,18 @@ def alternate_sentences(pos,sentence):
         repetition_penalty  = 10.0,
         num_return_sequences=10)
     generated_sentences=[]
-
+    sentence = sentence.replace("\r\n","")
     for i, sample_output in enumerate(sample_outputs):
         decoded_sentence = GPT2tokenizer.decode(sample_output, skip_special_tokens=True)
         # final_sentence = decoded_sentence
         final_sentence = tokenize.sent_tokenize(decoded_sentence)[0]
+        final_sentence = final_sentence.replace("\r\n","")
         generated_sentences.append(final_sentence)
     generated_sentences.append(sentence)
+    
     if len(generated_sentences)>2:
         return generated_sentences[-2:]
+    
     else:
         return generated_sentences
 
