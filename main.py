@@ -9,6 +9,9 @@ from datetime import datetime
 from nltk.tokenize import sent_tokenize
 import spacy
 from tabulate import tabulate
+from streamlit import caching
+import SessionState
+
 
 spacy.load("en_core_web_sm")
 
@@ -469,7 +472,11 @@ def all_initialisations():
     model_choices = ['Model Implemented','BERT']
     libraries = ['Library Used','spacy','nltk','tensorflow','allennlp','flashtext','streamlit','pke','sense2vec']
     gcp = ['GCP Services Used','VM Instance','Compute Engine']
-    choice = st.sidebar.selectbox('',activities)
+    session = SessionState.get(run_id=0)
+    reset = st.sidebar.button("Reset/Clear")
+    if reset:
+        session.run_id += 1
+    choice = st.sidebar.selectbox('',activities,key=session.run_id)
     model_choice = st.sidebar.selectbox('',model_choices)
     libraries_choice = st.sidebar.selectbox('',libraries)
     gcp_services = st.sidebar.selectbox('',gcp)

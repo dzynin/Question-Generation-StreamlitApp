@@ -29,18 +29,21 @@
 /* copy selector instead of xpath */
 #root > div:nth-child(1) > div > div > div > div > section.css-1lcbmhc.e1fqkh3o0 > div.css-1l02zno.e1fqkh3o1 > div.block-container.css-1dnb06j.eknhn3m2 > div:nth-child(1) > div:nth-child(3)
 {
-    padding-bottom:50px;
+    padding-bottom:30px;
 }
 #root > div:nth-child(1) > div > div > div > div > section.css-1lcbmhc.e1fqkh3o0 > div.css-1l02zno.e1fqkh3o1 > div.block-container.css-1dnb06j.eknhn3m2 > div:nth-child(1) > div:nth-child(2)
 {
-    padding-bottom:50px;
+    padding-bottom:30px;
 }
 
 #root > div:nth-child(1) > div > div > div > div > section.css-1lcbmhc.e1fqkh3o0 > div.css-1l02zno.e1fqkh3o1 > div.block-container.css-1dnb06j.eknhn3m2 > div:nth-child(1) > div:nth-child(1)
 
 {
-    padding-bottom:50px;
+    padding-bottom:30px;
 }
+#root > div:nth-child(1) > div > div > div > div > section.css-1lcbmhc.e1fqkh3o0 > div.css-1l02zno.e1fqkh3o1 > div.block-container.css-1dnb06j.eknhn3m2 > div:nth-child(1) > div:nth-child(4){
+   padding-bottom:30px; 
+}    
 /* title */
 .css-h2raq8>h2{
     width:110%;
@@ -62,7 +65,7 @@ img {
   top: -100px;
   width: 200px;
   height: 150px;
-    padding-top: 10px;
+  padding-top: 10px;
 }
 .st-dt {
     background-color: grey;
@@ -76,3 +79,22 @@ img {
     width: 2px;
     padding-left: 0.3rem;
 }
+
+#root > div:nth-child(1) > div > div > div > div > section.css-1lcbmhc.e1fqkh3o0 > div.css-1l02zno.e1fqkh3o1 > div.block-container.css-1dnb06j.eknhn3m2 > div:nth-child(1) > div:nth-child(1) > div > button{
+    background-color: white;
+  border: none;
+  color: black;
+/*   padding-bottom:30px; */
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 2px 2px;
+  cursor: pointer;
+    width: 234px;
+    height: 49px;
+    position: absolute;
+  left: 0px;
+  top: 425px;
+}    
+
