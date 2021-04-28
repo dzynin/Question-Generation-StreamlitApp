@@ -21,6 +21,13 @@ import pandas as pd
 # from prettytable import PrettyTable
 from IPython.display import Markdown, display
 
+def file_selector_match():
+    file = st.file_uploader('Upload the text file',type=['txt'],key='3')
+    if file is not None:
+        text = file.read().decode("utf-8")
+        st.write('File Content: '+ text)
+        return text
+
 @st.cache(show_spinner=False)
 def get_keywords(text):
     out=[]

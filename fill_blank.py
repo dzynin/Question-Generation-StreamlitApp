@@ -19,8 +19,16 @@ from pprint import pprint
 from flashtext import KeywordProcessor
 import subprocess
 from datetime import datetime
+from streamlit import caching
 
 
+def file_selector_fill():
+    caching.clear_cache()
+    file = st.file_uploader('Upload the text file',type=['txt'],key='2')
+    if file is not None:
+        text = file.read().decode("utf-8")
+        st.write('File Content: '+ text)
+        return text
 # keyword extraction using pke's MultipartiteRank Algorithm
 # Working principle of MultipartiteRank Algorithm - https://www.aclweb.org/anthology/N18-2105.pdf
 @st.cache(show_spinner=False)

@@ -24,6 +24,12 @@ import streamlit as st
 # !wget https://github.com/explosion/sense2vec/releases/download/v1.0.0/s2v_reddit_2015_md.tar.gz
 # !tar -xvf  s2v_reddit_2015_md.tar.gz
 
+def file_selector_mcq():
+    file = st.file_uploader('Upload the text file',type=['txt'],key='4')
+    if file is not None:
+        text = file.read().decode("utf-8")
+        st.text('File Content: '+ text)
+        return text
 @st.cache(show_spinner=False)
 def get_keywords(text):
     out=[]

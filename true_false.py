@@ -13,6 +13,14 @@ nltk.download('punkt')
 
 predictor = Predictor.from_path("https://s3-us-west-2.amazonaws.com/allennlp/models/elmo-constituency-parser-2018.03.14.tar.gz")
 
+
+
+def file_selector_tf():
+    file = st.file_uploader('Upload the text file',type=['txt'],key='1')
+    if file is not None:
+        text = file.read().decode("utf-8")
+        st.write('File Content: '+ text)
+        return text
 # Tokenizing sentence using nltk sent_tokenize
 @st.cache
 def tokenize_sentences_tf(text):

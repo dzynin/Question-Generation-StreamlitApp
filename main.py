@@ -15,10 +15,10 @@ import SessionState
 
 spacy.load("en_core_web_sm")
 
-from true_false import  pos_tree_from_sentence,get_np_vp,alternate_sentences,summarize_text,fuzzy_dup_remove
-from fill_blank import get_noun_adj_verb,get_sentences_for_keyword,get_fill_in_the_blanks
-from matchthefollowing import  get_keywords,get_sentences_for_keyword,question
-from mcq import get_keywords, get_sentences_for_keyword, kw_distractors, getMCQ
+from true_false import  pos_tree_from_sentence,get_np_vp,alternate_sentences,summarize_text,fuzzy_dup_remove,file_selector_tf
+from fill_blank import get_noun_adj_verb,get_sentences_for_keyword,get_fill_in_the_blanks,file_selector_fill
+from matchthefollowing import  get_keywords,get_sentences_for_keyword,question,file_selector_match
+from mcq import get_keywords, get_sentences_for_keyword, kw_distractors, getMCQ,file_selector_mcq
 from word_sim import input_text,input_word
 
 
@@ -128,7 +128,7 @@ def download_link(object_to_download, download_filename, download_link_text,ques
     return f'<a href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'
     
 def match_the_foll():
-    text = file_selector()
+    text = file_selector_match()
     quest = "Match the Following"
     ts_col1,ts_col2,ts_col3 = st.beta_columns((1,1,2))
     ts_col1.success("Run Model")
@@ -195,7 +195,7 @@ def match_the_foll():
             st.error("Please select input file!")
 
 def mcq():
-    text = file_selector()
+    text = file_selector_mcq()
     quest = "MCQ"
     ts_col1,ts_col2,ts_col3 = st.beta_columns((1,1,2))
     ts_col1.success("Run Model")
@@ -264,7 +264,7 @@ def mcq():
 
 
 def fill_blank(sentence,noun_verbs_adj,keyword_sentence_mapping_noun_verbs_adj):
-    text = file_selector()
+    text = file_selector_fill()
     quest = "Fill in The Blanks"
     ts_col1,ts_col2,ts_col3 = st.beta_columns((1,1,2))
     ts_col1.success("Run Model")
@@ -331,7 +331,7 @@ def fill_blank(sentence,noun_verbs_adj,keyword_sentence_mapping_noun_verbs_adj):
 
                 
 def true_false():
-    text = file_selector()
+    text = file_selector_tf()
     quest = "True or False"
     st_col1,st_col2,st_col3 = st.beta_columns((1,1,2))
     st_col1.success("Run Model")
@@ -464,8 +464,7 @@ def local_css(file_name):
 def all_initialisations():
     local_css("style.css")
     image = Image.open('DeepSphere_Logo_Final.png')
-    st.image(image)
-    
+    st.image(image)    
     st.markdown('<h2>NLP Simplifies Questions and Assignments Construction <br><font style="color: #5500FF;">Powered by Google Cloud & Colab</font></h2>',unsafe_allow_html=True)
     st.markdown('<hr style="border-top: 6px solid #8c8b8b; width: 150%;margin-left:-180px">',unsafe_allow_html=True)
     activities= ['Select Your Question Type','Fill in the Blanks','True or False', 'Match the Following', 'MCQ','Word Similarity']
