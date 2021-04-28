@@ -12,10 +12,11 @@ from tabulate import tabulate
 
 spacy.load("en_core_web_sm")
 
-from true_false import  pos_tree_from_sentence,get_np_vp,alternate_sentences
+from true_false import  pos_tree_from_sentence,get_np_vp,alternate_sentences,summarize_text,fuzzy_dup_remove
 from fill_blank import get_noun_adj_verb,get_sentences_for_keyword,get_fill_in_the_blanks
 from matchthefollowing import  get_keywords,get_sentences_for_keyword,question
 from mcq import get_keywords, get_sentences_for_keyword, kw_distractors, getMCQ
+from word_sim import input_text,input_word
 
 
 def file_selector():
@@ -63,28 +64,25 @@ def output_file(out, quest_type):
                 f.write(f"{str(count)}. {quest}")
                 if options:
                     for opt in options:
-                        f.write(chr(asci)+")"+" "+opt.capitalize()+"\n")
+                        f.write(chr(asci)+")"+" "+opt.capitalize()+"\r\n")
                         asci += 1
-                    f.write("\n")
+                    f.write("\r\n")
                 count += 1
         else:
             for i,que in enumerate(out):
-                f.write(f"{str(i+1)}. {que}\n")
-        f.write("\n")
+                f.write(f"{str(i+1)}. {que}\r\n")
+        f.write("\r\n")
         
              
 def download_link(object_to_download, download_filename, download_link_text,quest_type):
     """
     Generates a link to download the given object_to_download.
-
     object_to_download (str, pd.DataFrame):  The object to be downloaded.
     download_filename (str): filename and extension of file. e.g. mydata.csv, some_txt_output.txt
     download_link_text (str): Text to display for download link.
-
     Examples:
     download_link(YOUR_DF, 'YOUR_DF.csv', 'Click here to download data!','required_question_type')
     download_link(YOUR_STRING, 'YOUR_STRING.txt', 'Click here to download your text!','required_question_type')
-
     """
 #     if isinstance(object_to_download,pd.DataFrame):
 #         object_to_download = object_to_download.to_csv(index=False)
@@ -126,7 +124,6 @@ def download_link(object_to_download, download_filename, download_link_text,ques
     
     return f'<a href="data:file/txt;base64,{b64}" download="{download_filename}">{download_link_text}</a>'
     
-
 def match_the_foll():
     text = file_selector()
     quest = "Match the Following"
@@ -333,71 +330,130 @@ def fill_blank(sentence,noun_verbs_adj,keyword_sentence_mapping_noun_verbs_adj):
 def true_false():
     text = file_selector()
     quest = "True or False"
+    st_col1,st_col2,st_col3 = st.beta_columns((1,1,2))
+    st_col1.success("Run Model")
+    st_col2.success("Step 1")
+    if st_col3.button('Summarize Input'):
+        if text is not None:
+            with st.spinner("Summarizing input text based on weighted frequency"):
+                sentences = summarize_text(text)
+                st.write(sentences)
+            st.success('Generated summarized sentences from given input')
+        else:
+            st.error("Please select input file!")
     ts_col1,ts_col2,ts_col3 = st.beta_columns((1,1,2))
     ts_col1.success("Run Model")
-    ts_col2.success("Step 1")
+    ts_col2.success("Step 2")
     if ts_col3.button('Tokenize sentences'):
         if text is not None:
             with st.spinner("Processing input to tokenize sentence and get 1st sentence to generate question"):
-                sentences = tokenize_sentences(text)
+                sentences = summarize_text(text)
+                sentences = [i for n, i in enumerate(tokenize_sentences(sentences)) if i not in tokenize_sentences(sentences)[:n]]
+                sentences = fuzzy_dup_remove(sentences)
                 st.write(sentences)
-            st.success('Generated first sentence from given input')
+            st.success('Tokenization completed')
         else:
             st.error("Please select input file!")
     wc_col1,wc_col2,wc_col3 = st.beta_columns((1,1,2))
     wc_col1.success("Run Model")
-    wc_col2.success("Step 2")
+    wc_col2.success("Step 3")
     if wc_col3.button('Words Construction'):
         if text is not None:
             with st.spinner("Parsing input to construct words"):
-                sentences = tokenize_sentences(text)
-                print('type of sentence in main - ',type(sentences))
-                print('type of sentence in main - ',sentences)
-                pos = pos_tree_from_sentence(text)
+                sentences = summarize_text(text)
+                sentences = [i for n, i in enumerate(tokenize_sentences(sentences)) if i not in tokenize_sentences(sentences)[:n]][0]
+                pos = pos_tree_from_sentence(sentences)
                 st.write(pos)
-            st.success('Grammatical parsing completed')
+            st.success('Sample Grammatical parsing completed')
         else:
             st.error("Please select input file!")
     sc_col1,sc_col2,sc_col3 = st.beta_columns((1,1,2))
     sc_col1.success("Run Model")
-    sc_col2.success("Step 3")
+    sc_col2.success("Step 4")
     if sc_col3.button('Sentence Construction'):
         if text is not None:
+            split_list = []
             with st.spinner("Splitting sentence in-progress"):
-                sentences = tokenize_sentences(text)
-                pos = pos_tree_from_sentence(text)
-                split_sentence = get_np_vp(pos,sentences)
-                print('split_sentence in app.py- ',split_sentence)
-                st.write(split_sentence)
-            st.success('Sentence splitted')
+                sentences = summarize_text(text)
+                sentences = [i for n, i in enumerate(tokenize_sentences(sentences)) if i not in tokenize_sentences(sentences)[:n]]
+                sentences = fuzzy_dup_remove(sentences)
+                for i,sentence in enumerate(sentences):
+                    if i <3:
+                        pos = pos_tree_from_sentence(sentence)
+                        split_sentence = get_np_vp(pos,sentence)
+                        split_list.append(split_sentence)
+                print('split_sentence in app.py- ',split_list)
+                st.write(split_list)
+            st.success('Sentences are splitted')
         else:
             st.error("Please select input file!")
     as_col1,as_col2,as_col3 = st.beta_columns((1,1,2))
     as_col1.success("Run Model")
-    as_col2.success("Step 4")
+    as_col2.success("Step 5")
     if as_col3.button('Alternate Sentences'):
         if text is not None:
+            alt_sent_list = []
             with st.spinner("Generating Alternate sentences"):
-                sentences = tokenize_sentences(text)
-                pos = pos_tree_from_sentence(text)
-                alt_sentence = alternate_sentences(pos,sentences)
-                st.write(alt_sentence)
+                sentences = summarize_text(text)
+                sentences = [i for n, i in enumerate(tokenize_sentences(sentences)) if i not in tokenize_sentences(sentences)[:n]]
+                sentences = fuzzy_dup_remove(sentences)
+                for i,sentence in enumerate(sentences):
+                    if i <3:
+                        pos = pos_tree_from_sentence(sentence)
+                        alt_sentence = alternate_sentences(pos,sentence)
+                        alt_sent_list.append(alt_sentence)
+                        flat_list = [item for sublist in alt_sent_list for item in sublist]
+                st.write(flat_list)
                 output_file(text,"Input Text")
-                output_file(alt_sentence,quest)
+                output_file(flat_list,quest)
         else:
             st.error("Please select input file!")
     vm_col1,vm_col2,vm_col3 = st.beta_columns((1,1,2))
     vm_col1.success("Validate Model")
-    vm_col2.success("Step 5")
+    vm_col2.success("Step 6")
     if vm_col3.button('View Model Outcome'):
         if text is not None:
-            sentences = tokenize_sentences(text)
-            pos = pos_tree_from_sentence(text)
-            alt_sentence = alternate_sentences(pos,sentences)
-            st.markdown(download_link(alt_sentence, 'model_output.txt', 'Click here to download your output!',quest),unsafe_allow_html=True)
+            alt_sent_list = []
+            sentences = summarize_text(text)
+            sentences = [i for n, i in enumerate(tokenize_sentences(sentences)) if i not in tokenize_sentences(sentences)[:n]]
+            sentences = fuzzy_dup_remove(sentences)
+            for i,sentence in enumerate(sentences):
+                if i <3:
+                    pos = pos_tree_from_sentence(sentence)
+                    alt_sentence = alternate_sentences(pos,sentence)
+                    alt_sent_list.append(alt_sentence)
+                    flat_list = [item for sublist in alt_sent_list for item in sublist]
+            st.markdown(download_link(flat_list, 'model_output.txt', 'Click here to download your output!',quest),unsafe_allow_html=True)
         else:
             st.error("Please select input file!")
-    
+            
+            
+            
+            
+            
+            
+            
+def word_similarity():
+    text = file_selector()
+    if st.button("Text PreProcessing & Train Model"):
+        if text is not None:
+            with st.spinner("Text PreProcessing & Model Training in-progress"):
+                model = input_text(text)
+            st.success("Successfully model trained")
+        else:
+            st.error("Please select input file!")
+    word = st.text_area('Input your word here in lower case:')
+    if len(word)>0:
+        if st.button("Model Outcome"):
+            if text is not None:
+                with st.spinner("Validating Model"):
+                    model = input_text(text)  
+                    output = input_word(model,word)
+                st.write(output)
+            else:
+                st.error("Please select input file!")
+    else:
+        st.error("Type some input word")
 def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
@@ -409,9 +465,9 @@ def all_initialisations():
     
     st.markdown('<h2>NLP Simplifies Questions and Assignments Construction <br><font style="color: #5500FF;">Powered by Google Cloud & Colab</font></h2>',unsafe_allow_html=True)
     st.markdown('<hr style="border-top: 6px solid #8c8b8b; width: 150%;margin-left:-180px">',unsafe_allow_html=True)
-    activities= ['Select Your Question Type','Fill in the Blanks','True or False', 'Match the Following', 'MCQ']
+    activities= ['Select Your Question Type','Fill in the Blanks','True or False', 'Match the Following', 'MCQ','Word Similarity']
     model_choices = ['Model Implemented','BERT']
-    libraries = ['Library Used','spacy','nltk','tensorflow','allennlp','flashtext','streamlit','pke']
+    libraries = ['Library Used','spacy','nltk','tensorflow','allennlp','flashtext','streamlit','pke','sense2vec']
     gcp = ['GCP Services Used','VM Instance','Compute Engine']
     choice = st.sidebar.selectbox('',activities)
     model_choice = st.sidebar.selectbox('',model_choices)

@@ -10,7 +10,7 @@ import pandas as pd
 import base64
 from datetime import datetime
 
-from main import all_initialisations,mcq,match_the_foll,fill_blank,true_false
+from main import all_initialisations,mcq,match_the_foll,fill_blank,true_false,word_similarity
 
 
 if __name__=='__main__':
@@ -31,6 +31,9 @@ if __name__=='__main__':
         if choice == 'MCQ':
             st.subheader('Multiple Choice Questions')
             mcq()
+        if choice == 'Word Similarity':
+            st.subheader('Word Similarity')
+            word_similarity()
     except BaseException as e:
         print('error in main method - ',e)
         traceback.print_exc()
