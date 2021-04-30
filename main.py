@@ -504,7 +504,7 @@ def all_initialisations():
     st.markdown('<hr style="border-top: 6px solid #8c8b8b; width: 150%;margin-left:-180px">',unsafe_allow_html=True)
     activities= ['Select Your Question Type','Fill in the Blanks','True or False', 'Match the Following', 'MCQ','Word Similarity']
     model_choices = ['Model Implemented','BERT']
-    libraries = ['Library Used','spacy','nltk','tensorflow','allennlp','flashtext','streamlit','pke','sense2vec']
+    libraries = ['Library Used','spacy','nltk','tensorflow','allennlp','flashtext','streamlit','pke','sense2vec','gensim']
     gcp = ['GCP Services Used','VM Instance','Compute Engine']
     session = SessionState.get(run_id=0)
     reset = st.sidebar.button("Reset/Clear")
