@@ -381,7 +381,7 @@ def true_false():
                 sentences = [i for n, i in enumerate(tokenize_sentences(sentences)) if i not in tokenize_sentences(sentences)[:n]]
                 sentences = fuzzy_dup_remove(sentences)
                 for i,sentence in enumerate(sentences):
-                    if i <3:
+                    if i <5:
                         pos = pos_tree_from_sentence(sentence)
                         split_sentence = get_np_vp(pos,sentence)
                         split_list.append(split_sentence)
@@ -401,7 +401,7 @@ def true_false():
                 sentences = [i for n, i in enumerate(tokenize_sentences(sentences)) if i not in tokenize_sentences(sentences)[:n]]
                 sentences = fuzzy_dup_remove(sentences)
                 for i,sentence in enumerate(sentences):
-                    if i <3:
+                    if i <5:
                         pos = pos_tree_from_sentence(sentence)
                         alt_sentence = alternate_sentences(pos,sentence)
                         alt_sent_list.append(alt_sentence)
@@ -421,7 +421,7 @@ def true_false():
             sentences = [i for n, i in enumerate(tokenize_sentences(sentences)) if i not in tokenize_sentences(sentences)[:n]]
             sentences = fuzzy_dup_remove(sentences)
             for i,sentence in enumerate(sentences):
-                if i <3:
+                if i <5:
                     pos = pos_tree_from_sentence(sentence)
                     alt_sentence = alternate_sentences(pos,sentence)
                     alt_sent_list.append(alt_sentence)

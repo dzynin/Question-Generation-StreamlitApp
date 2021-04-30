@@ -97,6 +97,7 @@ def get_fill_in_the_blanks(sentence_mapping):
             insensitive_sent = re.compile(re.escape(key), re.IGNORECASE)
             no_of_replacements =  len(re.findall(re.escape(key),sent,re.IGNORECASE))
             line = insensitive_sent.sub(' _________ ', sent)
+            line = line.replace('\r\n','')
             if (sentence_mapping[key][0] not in processed) and no_of_replacements<2:
                 blank_sentences.append(line)
                 processed.append(sentence_mapping[key][0])
