@@ -19,7 +19,7 @@ from true_false import  pos_tree_from_sentence,get_np_vp,alternate_sentences,sum
 from fill_blank import get_noun_adj_verb,get_sentences_for_keyword,get_fill_in_the_blanks,file_selector_fill
 from matchthefollowing import  get_keywords,get_sentences_for_keyword,question,file_selector_match
 from mcq import get_keywords, get_sentences_for_keyword, kw_distractors, getMCQ,file_selector_mcq
-from word_sim import input_text,input_word
+from word_sim import remove_stopwords,sent_tokenize, remove_special_Charac, Train_Model, Model_Outcome
 
 
 def file_selector():
@@ -438,25 +438,60 @@ def true_false():
             
 def word_similarity():
     text = file_selector()
-    if st.button("Text PreProcessing & Train Model"):
+    if st.button("Remove Stopwords"):
         if text is not None:
-            with st.spinner("Text PreProcessing & Model Training in-progress"):
-                model = input_text(text)
-            st.success("Successfully model trained")
+            with st.spinner("In-Progress"):
+                text3 = remove_stopwords(text)
+            st.success("Successfully removed stopwords")
         else:
             st.error("Please select input file!")
-    word = st.text_area('Input your word here in lower case:')
+            
+    if st.button("Sentence Tokenization"):
+        if text is not None:
+            with st.spinner("In-Progress"):
+                text3 = remove_stopwords(text)
+                text2 = sent_tokenize(text3)
+            st.success("Successfully tokenized the text into sentences")
+        else:
+            st.error("Please check the input file!")
+            
+    if st.button("Remove Special Characters and Convert the text to Lower Case"):
+        if text is not None:
+            with st.spinner("In-Progress"):
+                text3 = remove_stopwords(text)
+                text2 = sent_tokenize(text3)
+                clean_text = remove_special_Charac(text2)
+            st.success("Successfully removed special characters and converted the text to lower case")
+        else:
+            st.error("Please check the input file!")
+            
+    if st.button("Train the Model"):
+        if text is not None:
+            with st.spinner("In-Progress"):
+                text3 = remove_stopwords(text)
+                text2 = sent_tokenize(text3)
+                clean_text = remove_special_Charac(text2)
+                model = Train_Model(clean_text)
+            st.success("Model training successful")
+        else:
+            st.error("Please check the input file!")
+            
+    word = st.text_input('Input your word here in lower case and press ENTER:')
     if len(word)>0:
         if st.button("Model Outcome"):
             if text is not None:
-                with st.spinner("Validating Model"):
-                    model = input_text(text)  
-                    output = input_word(model,word)
+                with st.spinner("Applying the trained Model"):
+                    text3 = remove_stopwords(text)
+                    text2 = sent_tokenize(text3)
+                    clean_text = remove_special_Charac(text2)
+                    model = Train_Model(clean_text)
+                    output = Model_Outcome(model,word)
                 st.write(output)
             else:
-                st.error("Please select input file!")
-    else:
-        st.error("Type some input word")
+                st.error("Please check the model!")
+#    else:
+#        st.error("Type some input word")
+
 def local_css(file_name):
     with open(file_name) as f:
         st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
