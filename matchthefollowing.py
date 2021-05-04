@@ -105,6 +105,7 @@ def question(keyword_sentence_mapping):
     }
     pd.set_option("display.max_colwidth", None)
     vAR_cols = pd.DataFrame(vAR_cols_dict)
+    return vAR_cols
     # tab.field_names=['A', 'B']
     # tab.align["A"] = "l"
     # tab.align["B"] = "l"
@@ -113,4 +114,4 @@ def question(keyword_sentence_mapping):
     # for word,context in zip(answers,final_sentences):
     #     tab.add_row([word,context.replace("\n"," ")])
     #     tab.add_row(['',''])
-    return vAR_cols
+#     return tab
