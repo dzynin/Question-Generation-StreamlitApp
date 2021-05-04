@@ -102,7 +102,8 @@ def kw_distractors(keyword_list):
     for kw in keyword_list:
         vAR_distractors = sense2vec_get_words(kw)
         if len(vAR_distractors)>=3:
-            vAR_distr[kw] = random.sample(vAR_distractors,3)
+#             vAR_distr[kw] = random.sample(vAR_distractors,3)
+            vAR_distr[kw] = vAR_distractors[:3]
             vAR_distr[kw].append(kw)
         elif len(vAR_distractors) >= 1 and len(vAR_distractors) < 3:
             vAR_distr[kw] = vAR_distractors
