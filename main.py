@@ -67,7 +67,7 @@ def output_file(out, quest_type):
                 f.write(f"{str(count)}. {quest}")
                 if options:
                     for opt in options:
-                        f.write(chr(asci)+")"+" "+opt.capitalize()+"\r\n")
+                        f.write(chr(asci)+")"+" "+opt.title()+"\r\n")
                         asci += 1
                     f.write("\r\n")
                 count += 1
@@ -115,7 +115,7 @@ def download_link(object_to_download, download_filename, download_link_text,ques
             object_to_download1+=f"{str(count)}. {quest}\n"
             if options:
                 for opt in options:
-                    object_to_download1+=chr(asci)+")"+" "+opt.capitalize()+"\n"
+                    object_to_download1+=chr(asci)+")"+" "+opt.title()+"\n"
                     asci += 1
                 object_to_download1+=f"\r\n"
             count += 1
