@@ -19,92 +19,92 @@ from pprint import pprint
 import random
 import pandas as pd
 # from prettytable import PrettyTable
-from IPython.display import Markdown, display
+# from IPython.display import Markdown, display
 
 def file_selector_match():
-    file = st.file_uploader('Upload the text file',type=['txt'],key='3')
-    if file is not None:
-        text = file.read().decode("utf-8")
-        st.write('File Content: '+ text)
-        return text
+    vAR_file = st.file_uploader('Upload the text file',type=['txt'],key='3')
+    if vAR_file is not None:
+        vAR_text = vAR_file.read().decode("utf-8")
+        st.write('File Content: '+ vAR_text)
+        return vAR_text
 
 @st.cache(show_spinner=False)
 def get_keywords(text):
-    out=[]
+    vAR_out=[]
     try:
-        extractor = pke.unsupervised.YAKE()
-        extractor.load_document(input=text)
+        vAR_extractor = pke.unsupervised.YAKE()
+        vAR_extractor.load_document(input=text)
         # pos = {'VERB', 'ADJ', 'NOUN'}
-        pos ={'NOUN'}
-        stoplist = list(string.punctuation)
-        stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
-        stoplist += stopwords.words('english')
-        extractor.candidate_selection(n=2,pos=pos, stoplist=stoplist)
+        vAR_pos ={'NOUN'}
+        vAR_stoplist = list(string.punctuation)
+        vAR_stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
+        vAR_stoplist += stopwords.words('english')
+        vAR_extractor.candidate_selection(n=2,pos=vAR_pos, stoplist=vAR_stoplist)
 
-        extractor.candidate_weighting(window=3,
-                                      stoplist=stoplist,
+        vAR_extractor.candidate_weighting(window=3,
+                                      stoplist=vAR_stoplist,
                                       use_stems=False)
 
-        keyphrases = extractor.get_n_best(n=30)
+        vAR_keyphrases = vAR_extractor.get_n_best(n=30)
         
-        for val in keyphrases:
-            out.append(val[0])
+        for val in vAR_keyphrases:
+            vAR_out.append(val[0])
     except:
-        out = []
+        vAR_out = []
         traceback.print_exc()
 
-    return out
+    return vAR_out
 
 #Extract sentences having the keywords that is extracted before.
 @st.cache(show_spinner=False)
 def get_sentences_for_keyword(keywords, sentences):
-    keyword_processor = KeywordProcessor()
-    keyword_sentences = {}
+    vAR_keyword_processor = KeywordProcessor()
+    vAR_keyword_sentences = {}
     for word in keywords:
-        keyword_sentences[word] = []
-        keyword_processor.add_keyword(word)
+        vAR_keyword_sentences[word] = []
+        vAR_keyword_processor.add_keyword(word)
     for sentence in sentences:
-        keywords_found = keyword_processor.extract_keywords(sentence)
-        for key in keywords_found:
-            keyword_sentences[key].append(sentence)
+        vAR_keywords_found = vAR_keyword_processor.extract_keywords(sentence)
+        for key in vAR_keywords_found:
+            vAR_keyword_sentences[key].append(sentence)
 
-    for key in keyword_sentences.keys():
-        values = keyword_sentences[key]
-        values = sorted(values, key=len, reverse=False)
-        keyword_sentences[key] = values
-    return keyword_sentences
+    for key in vAR_keyword_sentences.keys():
+        vAR_values = vAR_keyword_sentences[key]
+        vAR_values = sorted(vAR_values, key=len, reverse=False)
+        vAR_keyword_sentences[key] = vAR_values
+    return vAR_keyword_sentences
 
 
 def sentence_answers(keyword_sentence_mapping):
-    answers = []
-    final_sentences = []
+    vAR_answers = []
+    vAR_final_sentences = []
     for k,v in keyword_sentence_mapping.items():
         if len(v)>0:
-            match = v[0].lower()
-            answers.append(k)
-            if k in match:
-                temp = re.compile(re.escape(k), re.IGNORECASE)
-                final_sentences.append(temp.sub('<answer>',match))
+            vAR_match = v[0].lower()
+            vAR_answers.append(k)
+            if k in vAR_match:
+                vAR_temp = re.compile(re.escape(k), re.IGNORECASE)
+                vAR_final_sentences.append(vAR_temp.sub('<answer>',vAR_match))
             else:
-                final_sentences.append(match)
-    return final_sentences, answers
+                vAR_final_sentences.append(vAR_match)
+    return vAR_final_sentences, vAR_answers
 
-def printmd(string):
-    display(Markdown(string))
+# def printmd(string):
+#     display(Markdown(string))
 
 @st.cache(show_spinner=False)
 @st.cache(allow_output_mutation=True)
 def question(keyword_sentence_mapping):
     # tab = PrettyTable()
-    final_sentences, answers  = sentence_answers(keyword_sentence_mapping)
-    random.shuffle(answers)
-    random.shuffle(final_sentences)
-    cols_dict = {
-        "A": answers,
-        "B": final_sentences
+    vAR_final_sentences, vAR_answers  = sentence_answers(keyword_sentence_mapping)
+    random.shuffle(vAR_answers)
+    random.shuffle(vAR_final_sentences)
+    vAR_cols_dict = {
+        "A": vAR_answers,
+        "B": vAR_final_sentences
     }
     pd.set_option("display.max_colwidth", None)
-    cols = pd.DataFrame(cols_dict)
+    vAR_cols = pd.DataFrame(vAR_cols_dict)
     # tab.field_names=['A', 'B']
     # tab.align["A"] = "l"
     # tab.align["B"] = "l"
@@ -113,4 +113,4 @@ def question(keyword_sentence_mapping):
     # for word,context in zip(answers,final_sentences):
     #     tab.add_row([word,context.replace("\n"," ")])
     #     tab.add_row(['',''])
-    return cols
+    return vAR_cols
