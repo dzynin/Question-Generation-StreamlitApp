@@ -25,121 +25,122 @@ import streamlit as st
 # !tar -xvf  s2v_reddit_2015_md.tar.gz
 
 def file_selector_mcq():
-    file = st.file_uploader('Upload the text file',type=['txt'],key='4')
-    if file is not None:
-        text = file.read().decode("utf-8")
-        st.text('File Content: '+ text)
-        return text
+    vAR_file = st.file_uploader('Upload the text file',type=['txt'],key='4')
+    if vAR_file is not None:
+        vAR_text = vAR_file.read().decode("utf-8")
+        st.text('File Content: '+ vAR_text)
+        return vAR_text
+    
 @st.cache(show_spinner=False)
 def get_keywords(text):
-    out=[]
+    vAR_out=[]
     try:
-        extractor = pke.unsupervised.YAKE()
-        extractor.load_document(input=text)
+        vAR_extractor = pke.unsupervised.YAKE()
+        vAR_extractor.load_document(input=text)
         # pos = {'VERB', 'ADJ', 'NOUN'}
-        pos ={'NOUN'}
-        stoplist = list(string.punctuation)
-        stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
-        stoplist += stopwords.words('english')
-        extractor.candidate_selection(n=2,pos=pos, stoplist=stoplist)
+        vAR_pos ={'NOUN'}
+        vAR_stoplist = list(string.punctuation)
+        vAR_stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
+        vAR_stoplist += stopwords.words('english')
+        vAR_extractor.candidate_selection(n=2,pos=vAR_pos, stoplist=vAR_stoplist)
 
-        extractor.candidate_weighting(window=3,
-                                      stoplist=stoplist,
+        vAR_extractor.candidate_weighting(window=3,
+                                      stoplist=vAR_stoplist,
                                       use_stems=False)
 
-        keyphrases = extractor.get_n_best(n=30)
+        vAR_keyphrases = vAR_extractor.get_n_best(n=30)
         
 
-        for val in keyphrases:
-            out.append(val[0])
+        for val in vAR_keyphrases:
+            vAR_out.append(val[0])
     except:
-        out = []
+        vAR_out = []
         traceback.print_exc()
 
-    return out
+    return vAR_out
 
 #Extract sentences having the keywords that is extracted before.
 @st.cache(show_spinner=False)
 def get_sentences_for_keyword(keywords, sentences):
-    keyword_processor = KeywordProcessor()
-    keyword_sentences = {}
+    vAR_keyword_processor = KeywordProcessor()
+    vAR_keyword_sentences = {}
     for word in keywords:
-        keyword_sentences[word] = []
-        keyword_processor.add_keyword(word)
+        vAR_keyword_sentences[word] = []
+        vAR_keyword_processor.add_keyword(word)
     for sentence in sentences:
-        keywords_found = keyword_processor.extract_keywords(sentence)
-        for key in keywords_found:
-            keyword_sentences[key].append(sentence)
+        vAR_keywords_found = vAR_keyword_processor.extract_keywords(sentence)
+        for key in vAR_keywords_found:
+            vAR_keyword_sentences[key].append(sentence)
 
-    for key in keyword_sentences.keys():
-        values = keyword_sentences[key]
-        values = sorted(values, key=len, reverse=False)
-        keyword_sentences[key] = values
-    return keyword_sentences
+    for key in vAR_keyword_sentences.keys():
+        vAR_values = vAR_keyword_sentences[key]
+        vAR_values = sorted(vAR_values, key=len, reverse=False)
+        vAR_keyword_sentences[key] = vAR_values
+    return vAR_keyword_sentences
 
 # @st.cache(allow_output_mutation=True)
 def sense2vec_get_words(word):
-    s2v = Sense2Vec().from_disk('s2v_old')
-    output = []
-    word = word.lower()
-    word = word.replace(" ", "_")
+    vAR_s2v = Sense2Vec().from_disk('s2v_old')
+    vAR_output = []
+    vAR_word = word.lower()
+    vAR_word = vAR_word.replace(" ", "_")
 
-    sense = s2v.get_best_sense(word)
-    if sense:
-        most_similar = s2v.most_similar(sense, n=20)
-        for each_word in most_similar:
-            append_word = each_word[0].split("|")[0].replace("_", " ").lower()
-            if append_word.lower() != word.lower():
-                output.append(append_word.title())
+    vAR_sense = vAR_s2v.get_best_sense(vAR_word)
+    if vAR_sense:
+        vAR_most_similar = vAR_s2v.most_similar(vAR_sense, n=20)
+        for each_word in vAR_most_similar:
+            vAR_append_word = each_word[0].split("|")[0].replace("_", " ").lower()
+            if vAR_append_word.lower() != word.lower():
+                vAR_output.append(vAR_append_word.title())
 
-    out = list(OrderedDict.fromkeys(output))
-    return out
+    vAR_out = list(OrderedDict.fromkeys(vAR_output))
+    return vAR_out
 
 @st.cache(show_spinner=False)
 def kw_distractors(keyword_list):
-    distr = {}
+    vAR_distr = {}
     for kw in keyword_list:
-        distractors = sense2vec_get_words(kw)
-        if len(distractors)>=3:
-            distr[kw] = random.sample(distractors,3)
-            distr[kw].append(kw)
-        elif len(distractors) >= 1 and len(distractors) < 3:
-            distr[kw] = distractors
-            distr[kw].append(kw)
+        vAR_distractors = sense2vec_get_words(kw)
+        if len(vAR_distractors)>=3:
+            vAR_distr[kw] = random.sample(vAR_distractors,3)
+            vAR_distr[kw].append(kw)
+        elif len(vAR_distractors) >= 1 and len(vAR_distractors) < 3:
+            vAR_distr[kw] = vAR_distractors
+            vAR_distr[kw].append(kw)
         else:
-            distr[kw] = []
-    return distr
+            vAR_distr[kw] = []
+    return vAR_distr
 
 #Generate a question using context and answer with T5
 def get_question(sentence,answer):
-    question_model = T5ForConditionalGeneration.from_pretrained('ramsrigouthamg/t5_squad_v1')
-    question_tokenizer = T5Tokenizer.from_pretrained('t5-base')
-    text = "context: {} answer: {} </s>".format(sentence,answer)
-    max_len = 256
-    encoding = question_tokenizer.encode_plus(text,max_length=max_len, pad_to_max_length=True, return_tensors="pt")
+    vAR_question_model = T5ForConditionalGeneration.from_pretrained('ramsrigouthamg/t5_squad_v1')
+    vAR_question_tokenizer = T5Tokenizer.from_pretrained('t5-base')
+    vAR_text = "context: {} answer: {} </s>".format(sentence,answer)
+    vAR_max_len = 256
+    vAR_encoding = vAR_question_tokenizer.encode_plus(vAR_text,max_length=vAR_max_len, pad_to_max_length=True, return_tensors="pt")
 
-    input_ids, attention_mask = encoding["input_ids"], encoding["attention_mask"]
+    vAR_input_ids, vAR_attention_mask = vAR_encoding["input_ids"], vAR_encoding["attention_mask"]
 
-    outs = question_model.generate(input_ids=input_ids,
-                                    attention_mask=attention_mask,
+    vAR_outs = vAR_question_model.generate(input_ids=vAR_input_ids,
+                                    attention_mask=vAR_attention_mask,
                                     early_stopping=True,
                                     num_beams=5,
                                     num_return_sequences=1,
                                     no_repeat_ngram_size=2,
                                     max_length=200)
 
-    dec = [question_tokenizer.decode(ids) for ids in outs]
+    vAR_dec = [vAR_question_tokenizer.decode(ids) for ids in vAR_outs]
 
 
-    Question = dec[0].replace("question:","")
-    Question= Question.strip()
-    return Question
+    vAR_Question = vAR_dec[0].replace("question:","")
+    vAR_Question= vAR_Question.strip()
+    return vAR_Question
 
 @st.cache(show_spinner=False)
 def getMCQ(keyword_sentence_mapping,choices):
-    ques = {}
+    vAR_ques = {}
     for k,v in keyword_sentence_mapping.items():
-        sentence_for_T5 = " ".join(random.sample(v,1)[0].split()) 
-        ques[k] = get_question(sentence_for_T5,k)
-    final_out = {v:choices[k] for k,v in ques.items()}
-    return final_out
+        vAR_sentence_for_T5 = " ".join(random.sample(v,1)[0].split()) 
+        vAR_ques[k] = get_question(vAR_sentence_for_T5,k)
+    vAR_final_out = {v:choices[k] for k,v in vAR_ques.items()}
+    return vAR_final_out
